@@ -13,6 +13,7 @@ var Settings = require('../lib/settings').Settings;
 var mods = [];
 
 var getConfig = exports.getConfig = function getConfig(initConfig) {
+
   if ("object" !== typeof initConfig) {
     initConfig = {};
   }
@@ -116,12 +117,12 @@ var getConfig = exports.getConfig = function getConfig(initConfig) {
 
   // Calculate config file path
   var configPath, homeDir;
-  if (opts.config) {
+  if (opts.given.config) {
     // Explicit config file path provided via flag
-    configPath = path.resolve(opts.config);
+    configPath = path.resolve(opts.given.config);
   } else {
-    var defHome = Settings.getDefaultHome() + (opts.testnet ? '/testnet' : '');
-    homeDir = opts.homedir ? path.resolve(opts.homedir) : defHome;
+    var defHome = Settings.getDefaultHome() + (opts.given.testnet ? '/testnet' : '');
+    homeDir = opts.given.homedir ? path.resolve(opts.given.homedir) : defHome;
     configPath = path.resolve(homeDir, './settings');
 
     // DEPRECATED: Search in source tree for daemon/settings.js
@@ -193,76 +194,76 @@ var getConfig = exports.getConfig = function getConfig(initConfig) {
   }
 
   // Apply configuration from the command line
-  if (opts.homedir) {
-    cfg.homedir = opts.homedir;
+  if (opts.given.homedir) {
+    cfg.homedir = opts.given.homedir;
   }
-  if (opts.datadir) {
-    cfg.datadir = opts.datadir;
+  if (opts.given.datadir) {
+    cfg.datadir = opts.given.datadir;
   }
-  if (opts.addnode.length) {
-    cfg.network.initialPeers = cfg.network.initialPeers.concat(opts.addnode);
+  if (opts.given.addnode) {
+    cfg.network.initialPeers = cfg.network.initialPeers.concat(opts.given.addnode);
   }
-  if (opts.forcenode.length) {
-    cfg.network.initialPeers = cfg.network.forcePeers.concat(opts.forcenode);
+  if (opts.given.forcenode) {
+    cfg.network.initialPeers = cfg.network.forcePeers.concat(opts.given.forcenode);
   }
-  if (opts.connect) {
-    if (opts.connect.indexOf(',') != -1) {
-      opts.connect = opts.connect.split(',');
+  if (opts.given.connect) {
+    if (opts.given.connect.indexOf(',') != -1) {
+      opts.given.connect = opts.given.connect.split(',');
     }
-    cfg.network.connect = opts.connect;
+    cfg.network.connect = opts.given.connect;
   }
-  if (opts.nolisten) {
-    cfg.network.noListen = opts.nolisten;
+  if (opts.given.nolisten) {
+    cfg.network.noListen = opts.given.nolisten;
   }
-  if (opts.livenet) {
+  if (opts.given.livenet) {
     cfg.setLivenetDefaults();
-  } else if (opts.testnet) {
+  } else if (opts.given.testnet) {
     cfg.setTestnetDefaults();
   }
-  if (opts.port) {
-    opts.port = +opts.port;
-    if (opts.port > 65535 || opts.port < 0) {
-      logger.error('Invalid port setting: "'+opts.port+'"');
+  if (opts.given.port) {
+    opts.given.port = +opts.given.port;
+    if (opts.given.port > 65535 || opts.given.port < 0) {
+      logger.error('Invalid port setting: "'+opts.given.port+'"');
     } else {
-      cfg.network.port = opts.port;
+      cfg.network.port = opts.given.port;
     }
   }
-  if (opts.rpcuser) {
+  if (opts.given.rpcuser) {
     cfg.jsonrpc.enable = true;
-    cfg.jsonrpc.username = opts.rpcuser;
+    cfg.jsonrpc.username = opts.given.rpcuser;
   }
-  if (opts.rpcpassword) {
+  if (opts.given.rpcpassword) {
     cfg.jsonrpc.enable = true;
-    cfg.jsonrpc.password = opts.rpcpassword;
+    cfg.jsonrpc.password = opts.given.rpcpassword;
   }
-  if (opts.rpcport) {
-    opts.rpcport = +opts.rpcport;
-    if (opts.port > 65535 || opts.port < 0) {
-      logger.error('Invalid port setting: "'+opts.rpcport+'"');
+  if (opts.given.rpcport) {
+    opts.given.rpcport = +opts.given.rpcport;
+    if (opts.given.port > 65535 || opts.given.port < 0) {
+      logger.error('Invalid port setting: "'+opts.given.rpcport+'"');
     } else {
-      cfg.jsonrpc.port = opts.rpcport;
+      cfg.jsonrpc.port = opts.given.rpcport;
     }
   }
-  if (opts.netdbg) {
+  if (opts.given.netdbg) {
     logger.logger.levels.netdbg = 1;
   }
-  if (opts.bchdbg) {
+  if (opts.given.bchdbg) {
     logger.logger.levels.bchdbg = 1;
   }
-  if (opts.rpcdbg) {
+  if (opts.given.rpcdbg) {
     logger.logger.levels.rpcdbg = 1;
   }
-  if (opts.scrdbg) {
+  if (opts.given.scrdbg) {
     logger.logger.levels.scrdbg = 1;
   }
-  if (opts.mods) {
+  if (opts.given.mods) {
     cfg.mods = (("string" === typeof cfg.mods) ? cfg.mods+',' : '') +
-      opts.mods;
+      opts.given.mods;
   }
-  if (opts.noverify) {
+  if (opts.given.noverify) {
     cfg.verify = false;
   }
-  if (opts.noverifyscripts) {
+  if (opts.given.noverifyscripts) {
     cfg.verifyScripts = false;
   }
 
